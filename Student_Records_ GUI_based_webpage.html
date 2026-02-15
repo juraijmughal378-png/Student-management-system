@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Student Report Card System - Group 6</title>
+<style>
+  /* Professional, calm background with subtle gradient */
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1f2937, #3b82f6);
+    color: #f9fafb;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+  }
+  #welcome, #app {
+    display: none;
+    max-width: 700px;
+    margin: 80px auto;
+    background: #f3f4f6; /* light background for app */
+    color: #111827;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    padding: 40px 30px;
+    text-align: center;
+  }
+  #welcome.active, #app.active {
+    display: block;
+  }
+
+  /* Welcome page styling */
+  #welcome {
+    background: rgba(31, 41, 55, 0.9); /* dark transparent background */
+    color: #d1d5db;
+    padding: 50px 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.7);
+  }
+  #welcome h1 {
+    font-size: 2.8em;
+    margin-bottom: 0.4em;
+    font-weight: 700;
+  }
+  #welcome h2 {
+    font-weight: 500;
+    font-size: 1.8em;
+    margin-bottom: 1.2em;
+    color: #60a5fa;
+  }
+  #welcome ul {
+    list-style-type: none;
+    padding-left: 0;
+    font-size: 1.3em;
+    line-height: 1.8;
+    text-align: left;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  #welcome ul li {
+    margin-bottom: 12px;
+    border-left: 4px solid #60a5fa;
+    padding-left: 12px;
+    font-weight: 500;
+  }
+
+  /* App styling */
+  #app h1 {
+    color: #111827;
+    margin-bottom: 30px;
+    font-weight: 700;
+    font-size: 2.5em;
+  }
+  button {
+    padding: 10px 18px;
+    margin: 10px 6px 20px 6px;
+    font-size: 1em;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background: #3b82f6;
+    color: white;
+    transition: background 0.3s;
+  }
+  button:hover {
+    background: #2563eb;
+  }
+  input[type="text"], input[type="number"] {
+    padding: 8px;
+    width: 80%;
+    max-width: 320px;
+    margin-bottom: 14px;
+    font-size: 1em;
+    border-radius: 5px;
+    border: 1.5px solid #9ca3af;
+  }
+  input[type="text"]:focus, input[type="number"]:focus {
+    border-color: #3b82f6;
+    outline: none;
+  }
+  .message {
+    margin: 10px 0 20px;
+    font-weight: 600;
+  }
+  .message.success {
+    color: #059669;
+  }
+  .message.error {
+    color: #dc2626;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    font-size: 0.95em;
+  }
+  th, td {
+    border: 1px solid #d1d5db;
+    padding: 10px 12px;
+  }
+  th {
+    background-color: #3b82f6;
+    color: white;
+  }
+  #editSection, #deleteSection {
+    margin-top: 30px;
+    border-top: 1px solid #d1d5db;
+    padding-top: 20px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Welcome Page -->
+<div id="welcome" class="active">
+  <h1>Welcome to Student Report Card System</h1>
+  <h2>Group 6</h2>
+  <ul>
+    <li>Name: Ayesha Abdul Aziz — Roll No: 67</li>
+    <li>Name: Hamid Haroon — Roll No: 87</li>
+    <li>Name: Juraij Sadaqat — Roll No: 97</li>
+    <li>Name: Mowaddat Zahra — Roll No: 99</li>
+  </ul>
+</div>
+
+<!-- Main App Page -->
+<div id="app">
+  <h1>Student Report Card System</h1>
+
+  <div id="addSection">
+    <h3>Add Student</h3>
+    <input type="number" id="rollNoInput" placeholder="Roll No" min="1" />
+    <br/>
+    <input type="text" id="nameInput" placeholder="Name" />
+    <br/>
+    <input type="number" id="marksInput" placeholder="Marks (0-1100)" min="0" max="1100" />
+    <br/>
+    <button onclick="addStudent()">Add Student</button>
+    <div id="addMessage" class="message"></div>
+  </div>
+
+  <div id="showSection">
+    <h3>Student Records</h3>
+    <button onclick="showStudents()">Show All Students</button>
+    <div id="studentsList"></div>
+  </div>
+
+  <div id="editSection">
+    <h3>Edit Student</h3>
+    <input type="number" id="editRollNoSearch" placeholder="Enter Roll No to Edit" />
+    <br/>
+    <button onclick="startEdit()">Find Student</button>
+
+    <div id="editForm" style="display:none; margin-top:15px;">
+      <input type="number" id="editRollNo" placeholder="New Roll No" min="1" />
+      <br/>
+      <input type="text" id="editName" placeholder="New Name" />
+      <br/>
+      <input type="number" id="editMarks" placeholder="New Marks (0-1100)" min="0" max="1100" />
+      <br/>
+      <button onclick="editStudent()">Save Changes</button>
+      <div id="editMessage" class="message"></div>
+    </div>
+  </div>
+
+  <div id="deleteSection">
+    <h3>Delete Student</h3>
+    <input type="number" id="deleteRollNo" placeholder="Enter Roll No to Delete" />
+    <br/>
+    <button onclick="deleteStudent()">Delete Student</button>
+    <div id="deleteMessage" class="message"></div>
+  </div>
+</div>
+
+<script>
+  // Data Storage Key
+  const STORAGE_KEY = 'studentsData';
+
+  let students = [];
+
+  function loadData() {
+    const data = localStorage.getItem(STORAGE_KEY);
+    if (data) {
+      students = JSON.parse(data);
+    } else {
+      students = [];
+    }
+  }
+
+  function saveData() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(students));
+  }
+
+  function addStudent() {
+    const rollNo = parseInt(document.getElementById('rollNoInput').value);
+    const name = document.getElementById('nameInput').value.trim();
+    const marks = parseFloat(document.getElementById('marksInput').value);
+
+    const messageDiv = document.getElementById('addMessage');
+    messageDiv.className = 'message';
+
+    if (isNaN(rollNo) || rollNo <= 0) {
+      messageDiv.classList.add('error');
+      messageDiv.textContent = 'Please enter a valid Roll No.';
+      return;
+    }
+    if (!name) {
+      messageDiv.classList.add('error');
+      messageDiv.textContent = 'Please enter a valid Name.';
+      return;
+    }
+    if (isNaN(marks) || marks < 0 || marks > 1100) {
+      messageDiv.classList.add('error');
+      messageDiv.textContent = 'Please enter marks between 0 and 1100.';
+      return;
+    }
+    if (students.some(s => s.rollNo === rollNo)) {
+      messageDiv.classList.add('error');
+      messageDiv.textContent = 'Roll No already exists. Use Edit to modify.';
+      return;
+    }
+    students.push({rollNo, name, marks});
+    saveData();
+    messageDiv.classList.add('success');
+    messageDiv.textContent = 'Student added successfully!';
+    clearAddInputs();
+    showStudents();
+  }
+
+  function clearAddInputs() {
+    document.getElementById('rollNoInput').value = '';
+    document.getElementById('nameInput').value = '';
+    document.getElementById('marksInput').value = '';
+  }
+
+  function showStudents() {
+    const container = document.getElementById('studentsList');
+    if (students.length === 0) {
+      container.innerHTML = '<p>No records found.</p>';
+      return;
+    }
+    let html = '<table><tr><th>Roll No</th><th>Name</th><th>Marks</th><th>Percentage</th></tr>';
+    for (const s of students) {
+      let percent = ((s.marks / 1100) * 100).toFixed(2);
+      html += `<tr><td>${s.rollNo}</td><td>${s.name}</td><td>${s.marks}</td><td>${percent}%</td></tr>`;
+    }
+    html += '</table>';
+    container.innerHTML = html;
+  }
+
+  let editIndex = -1;
+  function startEdit() {
+    const rollNo = parseInt(document.getElementById('editRollNoSearch').value);
+    const messageDiv = document.getElementById('editMessage');
+    messageDiv.textContent = '';
+    messageDiv.className = 'message';
+    if (isNaN(rollNo)) {
+      messageDiv.classList.add('error');
+      messageDiv.textContent = 'Enter a valid Roll No to search.';
+      return;
+    }
+    editIndex = students.findIndex(s => s.rollNo === rollNo);
+    if (editIndex === -1) {
+      messageDiv.classList.add('error');
+      messageDiv.textContent = 'Student not found.';
+      document.getElementById('editForm').style.display = 'none';
+      return;
+    }
+    document.getElementById('editRollNo').value = students[editIndex].rollNo;
+    document.getElementById('editName').value = students[editIndex].name;
+    document.getElementById('editMarks').value = students[editIndex].marks;
+    document.getElementById('editForm').style.display = 'block';
+  }
+
+  function editStudent() {
+    if (editIndex === -1) return;
+
+    const newRollNo = parseInt(document.getElementById('editRollNo').value);
+    const newName = document.getElementById('editName').value.trim();
+    const newMarks = parseFloat(document.getElementById('editMarks').value);
+    const messageDiv = document.getElementById('editMessage');
+
+    messageDiv.className = 'message';
+
+    if (isNaN(newRollNo) || newRollNo <= 0) {
+      messageDiv.classList.add('error');
+      messageDiv.textContent = 'Please enter a valid Roll No.';
+      return;
+    }
+    if (!newName) {
+      messageDiv.classList.add('error');
+      messageDiv.textContent = 'Please enter a valid Name.';
+      return;
+    }
+    if (isNaN(newMarks) || newMarks < 0 || newMarks > 1100) {
+      messageDiv.classList.add('error');
+      messageDiv.textContent = 'Please enter marks between 0 and 1100.';
+      return;
+    }
+    if (students.some((s, idx) => s.rollNo === newRollNo && idx !== editIndex)) {
+      messageDiv.classList.add('error');
+      messageDiv.textContent = 'Roll No already exists for another student.';
+      return;
+    }
+
+    students[editIndex] = { rollNo: newRollNo, name: newName, marks: newMarks };
+    saveData();
+    messageDiv.classList.add('success');
+    messageDiv.textContent = 'Record updated successfully!';
+    showStudents();
+  }
+
+  function deleteStudent() {
+    const rollNo = parseInt(document.getElementById('deleteRollNo').value);
+    const messageDiv = document.getElementById('deleteMessage');
+    messageDiv.className = 'message';
+
+    if (isNaN(rollNo)) {
+      messageDiv.classList.add('error');
+      messageDiv.textContent = 'Please enter a valid Roll No.';
+      return;
+    }
+    const index = students.findIndex(s => s.rollNo === rollNo);
+    if (index === -1) {
+      messageDiv.classList.add('error');
+      messageDiv.textContent = 'Student not found.';
+      return;
+    }
+    students.splice(index, 1);
+    saveData();
+    messageDiv.classList.add('success');
+    messageDiv.textContent = 'Student deleted successfully!';
+    showStudents();
+    document.getElementById('deleteRollNo').value = '';
+  }
+
+  // On page load
+  window.onload = function() {
+    loadData();
+    showStudents();
+
+    // Show welcome screen for 3 seconds then switch to main app
+    setTimeout(() => {
+      document.getElementById('welcome').classList.remove('active');
+      document.getElementById('app').classList.add('active');
+    }, 3000);
+  };
+</script>
+
+</body>
+</html>
